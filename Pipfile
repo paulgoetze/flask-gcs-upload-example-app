@@ -9,6 +9,10 @@ verify_ssl = true
 filedepot = "*"
 flask = "*"
 boto3 = "*"
+flask-sqlalchemy = "*"
+alembic = "*"
+flask-migrate = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
