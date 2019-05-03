@@ -32,7 +32,7 @@ def production_config(app: Flask):
     return {
         'depot.backend': 'depot.io.boto3.S3Storage',
         'depot.endpoint_url': 'https://storage.googleapis.com',
-        'depot.access_key_id': app.config.get('GOOGLE_CLOUD_STORAGE_KEY'),
+        'depot.access_key_id': app.config.get('GOOGLE_CLOUD_STORAGE_ACCESS_KEY'),
         'depot.secret_access_key': app.config.get('GOOGLE_CLOUD_STORAGE_SECRET_KEY'),
         'depot.bucket': app.config.get('GOOGLE_CLOUD_STORAGE_BUCKET')
     }
