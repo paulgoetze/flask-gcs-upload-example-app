@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, abort
 from sqlalchemy.exc import IntegrityError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -11,7 +11,7 @@ from .models import User, UserSchema
 users = Blueprint('users', __name__, url_prefix='/users')
 
 
-@users.route('/')
+@users.route('')
 def get_users():
     """List all users"""
 
@@ -31,45 +31,40 @@ def get_user(user_id):
             data = UserSchema().dump(user).data
             return jsonify(data), HTTPStatus.OK
         else:
-            return jsonify(error='not found'), HTTPStatus.NOT_FOUND
-    except ValueError as error:
-        return jsonify(error=str(error)), HTTPStatus.NOT_FOUND
+            return abort(HTTPStatus.NOT_FOUND)
+    except ValueError:
+        return abort(HTTPStatus.NOT_FOUND)
 
 
-@users.route('/', methods=['POST'])
+@users.route('', methods=['POST'])
 @use_args({'email': fields.Str(required=True)})
 def create_user(args):
     """Create a new user"""
 
     email = args.get('email')
     user = User(email=email)
+    db.session.add(user)
 
     try:
-        db.session.add(user)
         db.session.commit()
         data = UserSchema().dump(user).data
-        return jsonify(data)
+        return jsonify(data), HTTPStatus.CREATED
     except IntegrityError:
         db.session.rollback()
-        db.session.close()
-        return jsonify(error='user already exists'), HTTPStatus.BAD_REQUEST
+        return abort(HTTPStatus.BAD_REQUEST, 'user already exists')
 
 
-@users.route('/', methods=['PUT'])
-@use_args({
-    'user_id': fields.Int(required=True, location='view_args'),
-    'email': fields.Str(required=True)
-})
-def update(args):
+@users.route('/<user_id>', methods=['PUT'])
+@use_args({'email': fields.Str(required=True)})
+def update(args, user_id):
     """Update a user"""
 
-    user = User.query.get(args.get('user_id'))
+    user = User.query.get(user_id)
 
     if not user:
-        jsonify(error='not found'), HTTPStatus.NOT_FOUND
+        abort(HTTPStatus.NOT_FOUND)
 
     user.email = args.get('email')
-    db.session.add(user)
     db.session.commit()
 
     data = UserSchema().dump(user).data
@@ -83,9 +78,9 @@ def delete_user(user_id):
     user = User.query.get(user_id)
 
     if not user:
-        jsonify(error='not found'), HTTPStatus.NOT_FOUND
+        return abort(HTTPStatus.NOT_FOUND)
 
-    db.session.remove(user)
+    db.session.delete(user)
     db.session.commit()
 
     return jsonify(), HTTPStatus.NO_CONTENT
