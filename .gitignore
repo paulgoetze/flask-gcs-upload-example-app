@@ -1,2 +1,4 @@
 .idea
 my_app/config/app_config.py
+tests/*.db
+.pytest_cache
