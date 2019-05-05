@@ -48,3 +48,4 @@ class App(Flask):
 
         from .config import depot
         depot.init_depots(self)
+        depot.make_middleware(self)

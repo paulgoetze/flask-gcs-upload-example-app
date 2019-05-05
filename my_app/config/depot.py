@@ -36,3 +36,9 @@ def production_config(app: Flask):
         'depot.secret_access_key': app.config.get('GOOGLE_CLOUD_STORAGE_SECRET_KEY'),
         'depot.bucket': app.config.get('GOOGLE_CLOUD_STORAGE_BUCKET')
     }
+
+
+def make_middleware(app):
+    """Make the depot middle to serve uploads through the /depot endpoint"""
+
+    app.wsgi_app = DepotManager.make_middleware(app.wsgi_app)
