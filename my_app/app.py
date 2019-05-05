@@ -5,6 +5,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+from my_app.error_handling import register_error_handlers
+
 APP_ROOT = path.dirname(path.abspath(__file__))
 
 db = SQLAlchemy()
@@ -16,11 +18,13 @@ class App(Flask):
     def __init__(self, config: Optional[Dict] = None):
         Flask.__init__(self, __name__)
 
+        self.url_map.strict_slashes = False
         self.load_config()
 
         if config:
             self.config.update(config)
 
+        register_error_handlers(self)
         self.register_blueprints()
         self.setup_depots()
 
