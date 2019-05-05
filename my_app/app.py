@@ -1,4 +1,5 @@
 from os import path
+from typing import Dict, Optional
 
 from flask import Flask
 from flask_migrate import Migrate
@@ -12,10 +13,14 @@ migrate = Migrate()
 
 class App(Flask):
 
-    def __init__(self):
+    def __init__(self, config: Optional[Dict] = None):
         Flask.__init__(self, __name__)
 
         self.load_config()
+
+        if config:
+            self.config.update(config)
+
         self.register_blueprints()
         self.setup_depots()
 
@@ -31,8 +36,8 @@ class App(Flask):
     def register_blueprints(self):
         """Register all blueprints"""
 
-        from .profile import profile
-        self.register_blueprint(profile)
+        from .users import users
+        self.register_blueprint(users)
 
     def setup_depots(self):
         """Setup the file depots"""
