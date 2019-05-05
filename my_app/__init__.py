@@ -1,3 +1,5 @@
 from my_app.app import App, db, migrate
 
-app = App()
+
+def create_app() -> App:
+    return App()
