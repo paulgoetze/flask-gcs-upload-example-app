@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify, abort, request
 from sqlalchemy.exc import IntegrityError
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -9,6 +9,11 @@ from my_app import db
 from .models import User, UserSchema
 
 users = Blueprint('users', __name__, url_prefix='/users')
+
+IMAGE_MIME_TYPES = {
+    'image/jpeg',
+    'image/png'
+}
 
 
 @users.route('')
@@ -84,3 +89,35 @@ def delete_user(user_id):
     db.session.commit()
 
     return jsonify(), HTTPStatus.NO_CONTENT
+
+
+@users.route('/<user_id>/avatar', methods=['POST'])
+def upload_avatar(user_id):
+    """Upload an avatar image for a user"""
+
+    user = User.query.get(user_id)
+
+    # check whether the user is available:
+    if not user:
+        abort(HTTPStatus.NOT_FOUND)
+
+    # check whether an avatar file was provided:
+    files = request.files
+    avatar = files.get('avatar')
+
+    if not avatar:
+        abort(HTTPStatus.BAD_REQUEST, 'no image file provided')
+
+    # check whether the provided avatar file has the right MIME type:
+    mime_types = set(avatar.content_type.split(','))
+    is_mime_type_allowed = any(mime_types.intersection(IMAGE_MIME_TYPES))
+
+    if not is_mime_type_allowed:
+        abort(HTTPStatus.BAD_REQUEST, f'allowed mimetypes are {IMAGE_MIME_TYPES}')
+
+    # if all checks passed, upload the avatar:
+    user.avatar = avatar
+    db.session.commit()
+    data = UserSchema().dump(user).data
+
+    return jsonify(data), HTTPStatus.CREATED

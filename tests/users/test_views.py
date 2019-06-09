@@ -2,6 +2,23 @@ import json
 from http import HTTPStatus
 
 from my_app.users.models import User
+from tests.support import helpers
+
+
+def test_avatar_upload(user, client):
+    """Test uploading an avatar image for a user"""
+
+    avatar = helpers.load_file_data('test.png')
+
+    response = client.post(
+        f'/users/{user.id}/avatar',
+        data={'avatar': avatar},
+        content_type='multipart/form-data'
+    )
+
+    data = response.json
+    assert response.status_code == HTTPStatus.CREATED
+    assert data['data']['attributes']['avatar'] == user.avatar.url
 
 
 def test_get_all_users(session, client):
