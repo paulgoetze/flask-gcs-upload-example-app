@@ -21,6 +21,46 @@ def test_avatar_upload(user, client):
     assert data['data']['attributes']['avatar'] == user.avatar.url
 
 
+def test_avatar_upload_with_missing_user(client):
+    """Test uploading an avatar image for a not available user"""
+
+    avatar = helpers.load_file_data('test.png')
+
+    response = client.post(
+        '/users/-1/avatar',
+        data={'avatar': avatar},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_avatar_upload_with_missing_file(user, client):
+    """Test uploading an avatar without sending a file"""
+
+    response = client.post(
+        f'/users/{user.id}/avatar',
+        data={},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_avatar_upload_with_invalid_mime_type(user, client):
+    """Test uploading an avatar with invalid MIME type"""
+
+    avatar = helpers.load_file_data('test.gif')
+
+    response = client.post(
+        f'/users/{user.id}/avatar',
+        data={'avatar': avatar},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
 def test_get_all_users(session, client):
     """Test getting all users"""
 
