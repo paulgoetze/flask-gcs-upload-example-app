@@ -29,7 +29,7 @@ class App(Flask):
         self.setup_depots()
 
         db.init_app(self)
-        migrate.init_app(self, db)
+        migrate.init_app(self)
 
     def load_config(self):
         """Load the app's config from app_config.py"""
