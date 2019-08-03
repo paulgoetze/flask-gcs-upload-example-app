@@ -19,6 +19,8 @@ def test_avatar_upload(user, client):
     data = response.json
     assert response.status_code == HTTPStatus.CREATED
     assert data['data']['attributes']['avatar'] == user.avatar.url
+    assert data['data']['attributes']['avatar_small'] == user.avatar.thumb_32x32_url
+    assert data['data']['attributes']['avatar_medium'] == user.avatar.thumb_128x128_url
 
 
 def test_avatar_upload_with_missing_user(client):

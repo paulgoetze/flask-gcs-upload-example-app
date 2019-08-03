@@ -17,6 +17,7 @@ psycopg2 = "*"
 webargs = "*"
 marshmallow-jsonapi = "*"
 pytest = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
