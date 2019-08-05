@@ -1,14 +1,26 @@
+from copy import copy
+
 from depot.manager import DepotManager
 from flask import Flask
+
+AVATAR_DEPOT = 'avatar'
+BACKGROUND_DEPOT = 'background'
+
+DEPOTS = {
+    AVATAR_DEPOT: {'depot.prefix': 'avatars/'},
+    BACKGROUND_DEPOT: {'depot.prefix': 'backgrounds/'}
+}
 
 
 def init_depots(app: Flask):
     """Setup all configured depots"""
 
-    depot_name = 'avatar'
-    depot_config = default_config(app)
+    config = default_config(app)
 
-    DepotManager.configure(depot_name, depot_config)
+    for (name, special_config) in DEPOTS.items():
+        depot_config = copy(config)
+        depot_config.update(special_config)
+        DepotManager.configure(name, depot_config)
 
 
 def default_config(app: Flask):

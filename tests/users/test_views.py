@@ -63,6 +63,62 @@ def test_avatar_upload_with_invalid_mime_type(user, client):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
+def test_background_upload(user, client):
+    """Test uploading an background image for a user"""
+
+    background = helpers.load_file_data('test.png')
+
+    response = client.post(
+        f'/users/{user.id}/background',
+        data={'profile_background': background},
+        content_type='multipart/form-data'
+    )
+
+    data = response.json
+    assert response.status_code == HTTPStatus.CREATED
+    assert data['data']['attributes']['profile_background'] == user.profile_background.url
+
+
+def test_background_upload_with_missing_user(client):
+    """Test uploading an background image for a not available user"""
+
+    background = helpers.load_file_data('test.png')
+
+    response = client.post(
+        '/users/-1/background',
+        data={'profile_background': background},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_background_upload_with_missing_file(user, client):
+    """Test uploading an background without sending a file"""
+
+    response = client.post(
+        f'/users/{user.id}/background',
+        data={},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_background_upload_with_invalid_mime_type(user, client):
+    """Test uploading an background with invalid MIME type"""
+
+    background = helpers.load_file_data('test.gif')
+
+    response = client.post(
+        f'/users/{user.id}/background',
+        data={'profile_background': background},
+        content_type='multipart/form-data'
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
 def test_get_all_users(session, client):
     """Test getting all users"""
 

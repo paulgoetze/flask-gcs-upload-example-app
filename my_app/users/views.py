@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Dict, Tuple
 
 from flask import Blueprint, jsonify, abort, request
 from sqlalchemy.exc import IntegrityError
@@ -95,29 +96,45 @@ def delete_user(user_id):
 def upload_avatar(user_id):
     """Upload an avatar image for a user"""
 
+    return _upload_attachment(user_id, 'avatar')
+
+
+@users.route('/<user_id>/background', methods=['POST'])
+def upload_background(user_id):
+    """Upload an profile background image for a user"""
+
+    return _upload_attachment(user_id, 'profile_background')
+
+
+def _upload_attachment(user_id: int, param_name: str) -> Tuple[Dict, HTTPStatus]:
     user = User.query.get(user_id)
 
     # check whether the user is available:
     if not user:
         abort(HTTPStatus.NOT_FOUND)
 
-    # check whether an avatar file was provided:
     files = request.files
-    avatar = files.get('avatar')
+    attachment = files.get(param_name)
 
-    if not avatar:
-        abort(HTTPStatus.BAD_REQUEST, 'no image file provided')
+    # check avatar is available and of allowed MIME type:
+    _check_is_valid_attachment(attachment)
 
-    # check whether the provided avatar file has the right MIME type:
-    mime_types = set(avatar.content_type.split(','))
-    is_mime_type_allowed = any(mime_types.intersection(IMAGE_MIME_TYPES))
-
-    if not is_mime_type_allowed:
-        abort(HTTPStatus.BAD_REQUEST, f'allowed mimetypes are {IMAGE_MIME_TYPES}')
-
-    # if all checks passed, upload the avatar:
-    user.avatar = avatar
+    # if all checks passed, upload the attachment:
+    setattr(user, param_name, attachment)
     db.session.commit()
     data = UserSchema().dump(user)
 
     return jsonify(data), HTTPStatus.CREATED
+
+
+def _check_is_valid_attachment(attachment):
+    """Check the availability and MIME type of the given attachment"""
+
+    if not attachment:
+        abort(HTTPStatus.BAD_REQUEST, f'no file was attached')
+
+    mime_types = set(attachment.content_type.split(','))
+    is_mime_type_allowed = any(mime_types.intersection(IMAGE_MIME_TYPES))
+
+    if not is_mime_type_allowed:
+        abort(HTTPStatus.BAD_REQUEST, f'allowed mimetypes are {IMAGE_MIME_TYPES}')
