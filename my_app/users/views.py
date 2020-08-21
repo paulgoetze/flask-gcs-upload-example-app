@@ -21,7 +21,7 @@ def get_users():
     """List all users"""
 
     records = User.query.all()
-    data = UserSchema().dump(records, many=True).data
+    data = UserSchema().dump(records, many=True)
     return jsonify(data), HTTPStatus.OK
 
 
@@ -33,7 +33,7 @@ def get_user(user_id):
         user = User.query.get(int(user_id))
 
         if user:
-            data = UserSchema().dump(user).data
+            data = UserSchema().dump(user)
             return jsonify(data), HTTPStatus.OK
         else:
             return abort(HTTPStatus.NOT_FOUND)
@@ -52,7 +52,7 @@ def create_user(args):
 
     try:
         db.session.commit()
-        data = UserSchema().dump(user).data
+        data = UserSchema().dump(user)
         return jsonify(data), HTTPStatus.CREATED
     except IntegrityError:
         db.session.rollback()
@@ -72,7 +72,7 @@ def update(args, user_id):
     user.email = args.get('email')
     db.session.commit()
 
-    data = UserSchema().dump(user).data
+    data = UserSchema().dump(user)
     return jsonify(data)
 
 
@@ -118,6 +118,6 @@ def upload_avatar(user_id):
     # if all checks passed, upload the avatar:
     user.avatar = avatar
     db.session.commit()
-    data = UserSchema().dump(user).data
+    data = UserSchema().dump(user)
 
     return jsonify(data), HTTPStatus.CREATED

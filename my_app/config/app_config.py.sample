@@ -6,4 +6,3 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 GOOGLE_CLOUD_STORAGE_ACCESS_KEY = 'my-storage-access-key'
 GOOGLE_CLOUD_STORAGE_SECRET_KEY = 'my-storage-secret-key'
 GOOGLE_CLOUD_STORAGE_BUCKET = 'my-bucket-name'
-

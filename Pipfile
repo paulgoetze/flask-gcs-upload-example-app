@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ipython = "*"
+mypy = "*"
 
 [packages]
 filedepot = "*"
@@ -20,4 +21,4 @@ pytest = "*"
 pillow = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

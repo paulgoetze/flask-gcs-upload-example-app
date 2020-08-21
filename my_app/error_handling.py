@@ -25,7 +25,7 @@ def register_error_handlers(app):
 def json_error(error):
     """Generate a json response from an exception"""
 
-    errors = [ErrorSchema().dump(error).data]
+    errors = [ErrorSchema().dump(error)]
     response = jsonify(errors=errors)
 
     code = status_code(error)

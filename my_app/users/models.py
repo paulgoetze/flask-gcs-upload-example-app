@@ -28,9 +28,9 @@ class User(db.Model):
 class UserSchema(Schema):
     id = fields.Int(required=True)
     email = fields.Str(required=True)
-    avatar = fields.Function(lambda user: user.avatar.url)
-    avatar_small = fields.Function(lambda user: user.avatar.thumb_32x32_url)
-    avatar_medium = fields.Function(lambda user: user.avatar.thumb_128x128_url)
+    avatar = fields.Function(lambda user: user.avatar and user.avatar.url)
+    avatar_small = fields.Function(lambda user: user.avatar and user.avatar.thumb_32x32_url)
+    avatar_medium = fields.Function(lambda user: user.avatar and user.avatar.thumb_128x128_url)
 
     class Meta:
         type_ = 'users'
