@@ -74,6 +74,6 @@ def session(db):
 
 @pytest.fixture(scope='function')
 def client(app, session):
-    """ Function-wide test client """
+    """Function-wide test client"""
 
     yield app.test_client()
