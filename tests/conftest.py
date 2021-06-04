@@ -67,7 +67,9 @@ def session(db):
 
     yield session
 
-    transaction.rollback()
+    if transaction.is_active:
+        transaction.rollback()
+
     connection.close()
     session.remove()
 
