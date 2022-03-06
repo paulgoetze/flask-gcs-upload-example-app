@@ -11,7 +11,7 @@ This is the example app for our 3-part post series on Medium:
 
 In order to run the Flask app:
 
-* make sure you have Python v3.9+ and [pipenv](https://pipenv.pypa.io/en/latest/install/#installing-pipenv) installed
+* make sure you have Python v3.10+ and [pipenv](https://pipenv.pypa.io/en/latest/install/#installing-pipenv) installed
 * run `pipenv install` to install the dependencies
 * run `pipenv shell` to activate the projects virtualenv
 * copy `my_app/config/app_config.py.sample` to `my_app/config/app_config.py` and adjust the config variables to your needs
